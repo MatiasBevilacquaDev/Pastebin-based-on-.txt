@@ -21,7 +21,7 @@
     const id = url.substring(lastSlashIndex + 1);
 
     console.log("el codigo es:", id);
-
+    localStorage.setItem("-"+id+"-", id);
     const contenidoTxt = document.getElementById('contenido-txt');
 
     fetch(`/obtener-archivo?id=${id}`)

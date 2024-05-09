@@ -53,66 +53,58 @@ server.post('/generar-archivo-copia', (req, res) => {
         return;
     }
 
-    const idG = `${generarEnlaceUnico()}`
+    const idG = generarEnlaceUnico();
     const nombreArchivo = `${idG}.txt`;
-    const rutaArchivo = path.join(__dirname, 'archivos', nombreArchivo);// ruta del archivo
+    const rutaArchivo = path.join(__dirname, 'archivos', nombreArchivo); // ruta del archivo
 
-    // verificamos si ya tiene el id padre en la primera linea
     let contenidoArchivo = contenido;
     if (!contenido.startsWith(idPadre + '-')) {
-        // agrega el id padre
+        // Agrega el id padre
         contenidoArchivo = `${idPadre}-${contenido}`;
     } else {
-        // si ya tiene id al principio le agrega la nueva
-        contenidoArchivo = contenido.replace(`${idPadre}-`, `${idPadre}-${idPadre}-`);
+        contenidoArchivo = contenido.replace(`${idPadre}-`, `${idPadre}-${idG}-`);
     }
 
-    // escribe el contenido en el archivo
     fs.writeFile(rutaArchivo, contenidoArchivo, (err) => {
         if (err) {
             console.error(err);
             return;
         }
         console.log(`Archivo ${nombreArchivo} generado.`);
-        let nombreMuestra = nombreArchivo.slice(0, -4);
-        //res.status(200).send(`http://localhost:3000/view.html/${nombreMuestra}`);
-        res.send(idG);
+        res.send(idG.toString());
     });
 });
 
 //fin del generar copia
 
 //eliminar hijos
-server.get('/eliminar-archivos', (req, res) => {
-    const id = req.query.id;
-    const rutaArchivos = path.join(__dirname, 'archivos');
+server.get('/eliminar-archivos', async (req, res) => {
+    try {
+        const id = req.query.id;
+        const rutaArchivos = path.join(__dirname, 'archivos');
+        const files = await fs.promises.readdir(rutaArchivos);
 
-    fs.readdir(rutaArchivos, (err, files) => {
-        if (err) {
-            console.error('Error al leer el directorio:', err);
-            return res.status(500).send('Error al leer el directorio.');
-        }
-
-        files.forEach(file => {
+        await Promise.all(files.map(async (file) => {
             const filePath = path.join(rutaArchivos, file);
             const rl = readline.createInterface({
                 input: fs.createReadStream(filePath),
                 crlfDelay: Infinity
             });
 
-            rl.on('line', line => {
+            for await (const line of rl) {
                 if (line.includes(id)) {
-                    fs.unlink(filePath, err => {
-                        if (err) {
-                            console.error('Error al eliminar el archivo:', err);
-                            return res.status(500).send('Error al eliminar el archivo.');
-                        }
-                        console.log('Archivo eliminado:', file);
-                    });
+                    await fs.promises.unlink(filePath);
+                    console.log('Archivo eliminado:', file);
+                    break;
                 }
-            });
-        });
-    });
+            }
+        }));
+
+        res.send('Archivos eliminados correctamente.');
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).send('Error al eliminar los archivos.');
+    }
 });
 //eliminar hijos fin
 
