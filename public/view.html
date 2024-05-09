@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Code Looking Everywhere</title>
+    <link rel="stylesheet" href="/viewStyles.css">
+</head>
+<body>
+
+<div id="input-container">
+    <textarea id="contenido-txt" placeholder="Ingrese su texto"></textarea>
+    <div id="botones-container">
+        <button id="generar-copia-btn">Generar Copia</button>
+        <button id="eliminar-btn">Eliminar copias</button>
+    </div>
+</div>
+
+<script>
+    const url = window.location.href;
+    const lastSlashIndex = url.lastIndexOf('/');
+    const id = url.substring(lastSlashIndex + 1);
+
+    console.log("el codigo es:", id);
+
+    const contenidoTxt = document.getElementById('contenido-txt');
+
+    fetch(`/obtener-archivo?id=${id}`)
+        .then(response => response.text()) // convierte la respuesta en texto
+        .then(data => {
+            // data contiene el contenido del archivo
+            console.log(data); // data en consola
+
+            // separa las lineas
+            const lineas = data.split('\n');
+
+            // guardamos la primera linea
+            localStorage.setItem('primeraLinea', lineas[0]);
+
+            // eliminamos la primera linea
+            lineas.shift();
+            contenidoTxt.value = lineas.join('\n');
+        })
+        .catch(error => console.error('Error al obtener el archivo:', error));
+</script>
+
+<script src="/read.js"></script>
+
+</body>
+</html>

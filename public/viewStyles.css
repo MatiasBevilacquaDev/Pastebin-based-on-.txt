@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css?family=Press+Start+2P');
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #5465ff;
+}
+
+#input-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+#contenido-txt {
+    width: 50%;
+    font-family: 'Press Start 2P', cursive;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 14px;
+    height: 70%;
+    resize: vertical;
+    margin-bottom: 10px;
+}
+
+#botones-container {
+    display: flex;
+    justify-content: space-between;
+    width: 50%;
+}
+
+#generar-copia-btn, #eliminar-btn {
+    font-size: 1.2em;
+    font-family: 'Press Start 2P', cursive;
+    width: 45%;
+    height: 70px;
+    background: #BFD7FF;
+    border: 0px;
+    position: relative;
+    box-shadow:
+            inset -4px 2px 1px 1px #000000,
+            inset -4px -2px 1px 1px #595959,
+            inset 4px 0px 1px 1px #333333;
+    border-radius: 5px;
+}
+
+#generar-copia-btn:hover, #eliminar-btn:hover {
+    cursor: pointer;
+    background-color: #9BB1FF;
+}
+
+#generar-copia-btn:active, #eliminar-btn:active {
+    top: 5px;
+    box-shadow:
+            -4px 2px 1px 1px grey,
+            -4px -2px 1px 1px lightgray,
+            4px 0px 1px 1px lightgray;
+}
+
+#generar-copia-btn::after, #eliminar-btn::after {
+    content: '';
+    background: black;
+    position: absolute;
+    left: -2.5%;
+    top: 0;
+    width: 105%;
+    height: 100%;
+    z-index: -1;
+}
+
+#generar-copia-btn::before, #eliminar-btn::before {
+    content: '';
+    background: black;
+    position: absolute;
+    left: 0;
+    top: -5%;
+    width: 100%;
+    height: 113%;
+    z-index: -1;
+}
