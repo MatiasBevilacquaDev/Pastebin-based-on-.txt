@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(idG => {
                 //alert(message);
-                window.location.replace(`http://localhost:3000/view.html/${idG}`);
+                window.location = (`http://localhost:3000/view.html/${idG}`);
             })
             .catch(error => {
                 console.error('Error:', error);

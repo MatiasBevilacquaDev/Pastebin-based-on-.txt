@@ -20,9 +20,10 @@
     const lastSlashIndex = url.lastIndexOf('/');
     const id = url.substring(lastSlashIndex + 1);
 
-    console.log("el codigo es:", id);
-    localStorage.setItem("-"+id+"-", id);
+    console.log("El código es:", id);
+
     const contenidoTxt = document.getElementById('contenido-txt');
+    let primeraLineaOriginal; // Variable para almacenar la primera línea original
 
     fetch(`/obtener-archivo?id=${id}`)
         .then(response => response.text()) // convierte la respuesta en texto
@@ -30,17 +31,51 @@
             // data contiene el contenido del archivo
             console.log(data); // data en consola
 
-            // separa las lineas
+            // separa las líneas
             const lineas = data.split('\n');
 
-            // guardamos la primera linea
-            localStorage.setItem('primeraLinea', lineas[0]);
+            // Guarda la primera línea original en una variable auxiliar
+            primeraLineaOriginal = lineas[0];
 
-            // eliminamos la primera linea
+            // Elimina la primera línea del array para obtener el contenido restante
             lineas.shift();
+
             contenidoTxt.value = lineas.join('\n');
-        })
-        .catch(error => console.error('Error al obtener el archivo:', error));
+        });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const generarCopiaBtn = document.getElementById('generar-copia-btn');
+
+        generarCopiaBtn.addEventListener('click', function () {
+            const contenido = contenidoTxt.value;
+
+            // Incluye la primera línea original al principio del contenido
+            const contenidoConPrimeraLinea = `${primeraLineaOriginal}\n${contenido}`;
+
+            fetch('/generar-archivo-copia', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: id, contenido: contenidoConPrimeraLinea })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al generar la copia.');
+                    }
+                    return response.text();
+                })
+                .then(idG => {
+                    window.location = (`http://localhost:3000/view.html/${idG}`);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al generar la copia. Por favor, inténtelo de nuevo.');
+                });
+
+        });
+    });
+
 </script>
 
 <script src="/read.js"></script>

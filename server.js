@@ -10,8 +10,20 @@ server.use(express.json());
 
 function generarEnlaceUnico() {
     var stamp = new Date().getTime();
-    return stamp;
+    var letrasAleatorias = '';
+    var letras = 'abcdefghijklmnopqrstuvwxyz';
+
+    // Generar tres letras aleatorias
+    for (var i = 0; i < 3; i++) {
+        var indice = Math.floor(Math.random() * letras.length);
+        letrasAleatorias += letras.charAt(indice);
+    }
+
+    return stamp + letrasAleatorias;
 }
+
+console.log(generarEnlaceUnico());
+
 //generar archivo nuevo
 server.post('/generar-archivo', (req, res) => {
     const contenido = req.body.contenido;
@@ -26,7 +38,7 @@ server.post('/generar-archivo', (req, res) => {
     const rutaArchivo = path.join(__dirname, 'archivos', nombreArchivo);
 
     // poner tree: en la primera para setearla
-    const contenidoArchivo = `${idG}\n${contenido}`;
+    const contenidoArchivo = `${idG}-\n${contenido}`;
 
     fs.writeFile(rutaArchivo, contenidoArchivo, (err) => {
         if (err) {
@@ -91,14 +103,25 @@ server.get('/eliminar-archivos', async (req, res) => {
                 crlfDelay: Infinity
             });
 
+            let primeraLinea;
             for await (const line of rl) {
-                if (line.includes(id)) {
-                    await fs.promises.unlink(filePath);
-                    console.log('Archivo eliminado:', file);
-                    break;
-                }
+                primeraLinea = line;
+                break;
+            }
+
+            // Verificar si la ID está presente exactamente como una ID individual
+            const idsEnPrimeraLinea = primeraLinea.split('-');
+            const contieneID = idsEnPrimeraLinea.some(idLinea => idLinea === id);
+            if (contieneID) {
+                await fs.promises.unlink(filePath);
+                console.log('Archivo eliminado:', file);
             }
         }));
+
+        // Ahora eliminamos también el archivo actual
+        const archivoActual = path.join(rutaArchivos, `${id}.txt`);
+        await fs.promises.unlink(archivoActual);
+        console.log('Archivo actual eliminado:', `${id}.txt`);
 
         res.send('Archivos eliminados correctamente.');
     } catch (error) {
@@ -106,6 +129,8 @@ server.get('/eliminar-archivos', async (req, res) => {
         res.status(500).send('Error al eliminar los archivos.');
     }
 });
+
+
 //eliminar hijos fin
 
 
