@@ -109,7 +109,7 @@ server.get('/eliminar-archivos', async (req, res) => {
                 break;
             }
 
-            // Verificar si la ID está presente exactamente como una ID individual
+
             const idsEnPrimeraLinea = primeraLinea.split('-');
             const contieneID = idsEnPrimeraLinea.some(idLinea => idLinea === id);
             if (contieneID) {
@@ -118,7 +118,7 @@ server.get('/eliminar-archivos', async (req, res) => {
             }
         }));
 
-        // Ahora eliminamos también el archivo actual
+
         const archivoActual = path.join(rutaArchivos, `${id}.txt`);
         await fs.promises.unlink(archivoActual);
         console.log('Archivo actual eliminado:', `${id}.txt`);

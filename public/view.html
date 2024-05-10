@@ -23,7 +23,7 @@
     console.log("El código es:", id);
 
     const contenidoTxt = document.getElementById('contenido-txt');
-    let primeraLineaOriginal; // Variable para almacenar la primera línea original
+    let primeraLineaOriginal; // variable para almacenar la primera línea original
 
     fetch(`/obtener-archivo?id=${id}`)
         .then(response => response.text()) // convierte la respuesta en texto
@@ -34,10 +34,10 @@
             // separa las líneas
             const lineas = data.split('\n');
 
-            // Guarda la primera línea original en una variable auxiliar
+            // guarda la primera línea original en una variable auxiliar
             primeraLineaOriginal = lineas[0];
 
-            // Elimina la primera línea del array para obtener el contenido restante
+            // elimina la primera linea
             lineas.shift();
 
             contenidoTxt.value = lineas.join('\n');
@@ -49,7 +49,7 @@
         generarCopiaBtn.addEventListener('click', function () {
             const contenido = contenidoTxt.value;
 
-            // Incluye la primera línea original al principio del contenido
+            // incluye la priemra linea
             const contenidoConPrimeraLinea = `${primeraLineaOriginal}\n${contenido}`;
 
             fetch('/generar-archivo-copia', {
