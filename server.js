@@ -24,7 +24,7 @@ function generarEnlaceUnico() {
 
 console.log(generarEnlaceUnico());
 
-//generar archivo nuevo
+// Generar archivo nuevo
 server.post('/generar-archivo', (req, res) => {
     const contenido = req.body.contenido;
 
@@ -33,7 +33,7 @@ server.post('/generar-archivo', (req, res) => {
         return;
     }
 
-    const idG = `${generarEnlaceUnico()}`
+    const idG = `${generarEnlaceUnico()}`;
     const nombreArchivo = `${idG}.txt`;
     const rutaArchivo = path.join(__dirname, 'archivos', nombreArchivo);
 
@@ -48,12 +48,11 @@ server.post('/generar-archivo', (req, res) => {
         }
         console.log(`Archivo ${nombreArchivo} generado.`);
         let nombreMuestra = nombreArchivo.slice(0, -4);
-        //res.status(200).send(`http://localhost:3000/view.html/${nombreMuestra}`);
         res.send(idG);
     });
 });
 
-//generar archivo copia
+// Generar archivo copia
 server.post('/generar-archivo-copia', (req, res) => {
     const contenido = req.body.contenido;
     const url = req.headers.referer; // obtiene la URL
@@ -87,9 +86,7 @@ server.post('/generar-archivo-copia', (req, res) => {
     });
 });
 
-//fin del generar copia
-
-//eliminar hijos
+// Eliminar hijos
 server.get('/eliminar-archivos', async (req, res) => {
     try {
         const id = req.query.id;
@@ -109,19 +106,29 @@ server.get('/eliminar-archivos', async (req, res) => {
                 break;
             }
 
-
             const idsEnPrimeraLinea = primeraLinea.split('-');
             const contieneID = idsEnPrimeraLinea.some(idLinea => idLinea === id);
             if (contieneID) {
-                await fs.promises.unlink(filePath);
-                console.log('Archivo eliminado:', file);
+                try {
+                    await fs.promises.unlink(filePath);
+                    console.log('Archivo eliminado:', file);
+                } catch (err) {
+                    if (err.code !== 'ENOENT') {
+                        throw err;
+                    }
+                }
             }
         }));
 
-
         const archivoActual = path.join(rutaArchivos, `${id}.txt`);
-        await fs.promises.unlink(archivoActual);
-        console.log('Archivo actual eliminado:', `${id}.txt`);
+        try {
+            await fs.promises.unlink(archivoActual);
+            console.log('Archivo actual eliminado:', `${id}.txt`);
+        } catch (err) {
+            if (err.code !== 'ENOENT') {
+                throw err;
+            }
+        }
 
         res.send('Archivos eliminados correctamente.');
     } catch (error) {
@@ -130,13 +137,7 @@ server.get('/eliminar-archivos', async (req, res) => {
     }
 });
 
-
-//eliminar hijos fin
-
-
-server.use(express.static(path.join(__dirname, 'public')));
-
-//manda todo a /view.html a toda url que sea view.html/ o +
+// Mandar todo a /view.html a toda url que sea view.html/ o +
 server.get('/view.html/:id?', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'view.html'));
 });
