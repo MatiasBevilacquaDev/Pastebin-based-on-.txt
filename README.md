@@ -28,7 +28,11 @@ A simple web application that mimics the functionality of Pastebin but uses `.tx
     ```bash
     node server.js
     ```
-2. Open your web browser and navigate to:
+    or for greater comfort
+   ```bash
+    nodemon server.js
+    ```
+3. Open your web browser and navigate to:
     ```
     http://localhost:3000
     ```
