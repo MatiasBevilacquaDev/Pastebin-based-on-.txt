@@ -1,4 +1,4 @@
-# Pastebin Style Project
+# Web on .txt base style Pastebin
 
 ## Description
 A simple web application that mimics the functionality of Pastebin but uses `.txt` files instead of a database. When an original file is deleted, all its copies are also removed.
